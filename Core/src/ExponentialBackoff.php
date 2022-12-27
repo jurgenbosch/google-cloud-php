@@ -17,6 +17,9 @@
 
 namespace Google\Cloud\Core;
 
+use GuzzleHttp\Psr7\Utils;
+use Psr\Http\Message\RequestInterface;
+
 /**
  * Exponential backoff implementation.
  */
@@ -45,13 +48,22 @@ class ExponentialBackoff
     private $calcDelayFunction;
 
     /**
+     * @var string
+     */
+    private $retryIdentifierHash;
+
+    /**
      * @param int $retries [optional] Number of retries for a failed request.
      * @param callable $retryFunction [optional] returns bool for whether or not to retry
      */
-    public function __construct($retries = null, callable $retryFunction = null)
-    {
+    public function __construct(
+        $retries = null,
+        callable $retryFunction = null,
+        $retryIdentifierHash = null
+    ) {
         $this->retries = $retries !== null ? (int) $retries : 3;
         $this->retryFunction = $retryFunction;
+        $this->retryIdentifierHash = $retryIdentifierHash;
         // @todo revisit this approach
         // @codeCoverageIgnoreStart
         $this->delayFunction = static function ($delay) {
@@ -77,6 +89,7 @@ class ExponentialBackoff
 
         while (true) {
             try {
+                $this->setRetryIdentifierHeaders($retryAttempt, $arguments);
                 return call_user_func_array($function, $arguments);
             } catch (\Exception $exception) {
                 if ($this->retryFunction) {
@@ -132,5 +145,31 @@ class ExponentialBackoff
             mt_rand(0, 1000000) + (pow(2, $attempt) * 1000000),
             self::MAX_DELAY_MICROSECONDS
         );
+    }
+
+    /**
+     * Updates retry identifier headers
+     *
+     * @param int $currentAttempt The current retry attempt to be made.
+     * @return \Psr\Http\Message\RequestInterface
+     */
+    private function setRetryIdentifierHeaders(int $currentAttempt, &$arguments): void
+    {
+        if(
+            ($this->retryIdentifierHash !== null) &&
+            !empty($arguments) &&
+            ($arguments[0] instanceof RequestInterface)
+        ) {
+            $customKeyName = sprintf(
+                "gccl-invocation-id/%s/gccl-attempt-count/%d",
+                $this->retryIdentifierHash,
+                $currentAttempt
+            );
+            $headers = ['custom_key_name' => $customKeyName];
+            $arguments[0] = Utils::modifyRequest(
+                $arguments[0],
+                ['set_headers' => $headers]
+            );
+        }
     }
 }

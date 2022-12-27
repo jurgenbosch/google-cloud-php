@@ -29,6 +29,7 @@ use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use Ramsey\Uuid\Uuid;
 
 /**
  * The RequestWrapper is responsible for delivering and signing requests.
@@ -184,10 +185,12 @@ class RequestWrapper
      */
     public function send(RequestInterface $request, array $options = [])
     {
+        $retryIdentifierHash = Uuid::uuid4()->toString();
         $retryOptions = $this->getRetryOptions($options);
         $backoff = new ExponentialBackoff(
             $retryOptions['retries'],
-            $retryOptions['retryFunction']
+            $retryOptions['retryFunction'],
+            $retryIdentifierHash
         );
 
         if ($retryOptions['delayFunction']) {
