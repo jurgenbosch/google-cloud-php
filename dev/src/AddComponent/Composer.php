@@ -74,9 +74,7 @@ class Composer
      * @var array
      */
     private $defaultDevDeps = [
-        "phpunit/phpunit" => "^4.8|^5.0",
-        "google/cloud-core" => "^1.31",
-        "phpdocumentor/reflection" => "^3.0"
+        "phpunit/phpunit" => "^4.8|^5.0|^8.0"
     ];
 
     /**
@@ -170,73 +168,24 @@ class Composer
             'googleapis/google-cloud-php-'. str_replace('cloud-', '', $this->info['name']) .'.git'
         );
 
-        $entry = $this->ask(
-            'Enter the entry service for the component, relative to the folder. ' .
-            'For instance, for path `Foo/src/FooClient.php`, enter `src/FooClient.php`. ' .
-            'Gapic-only clients should leave this blank.'
-        );
-
         $composer['extra']['component'] = [
             'id' => $this->info['name'],
             'path' => $relativePath,
-            'entry' => $entry ?: null,
             'target' => $target
         ];
 
+        $composer['require-dev'] = [];
         foreach ($this->defaultDeps as $dep) {
-            $confirm = $this->confirm(sprintf('Should `%s` be required?', $dep));
-            if (!$this->askQuestion($confirm)) {
-                continue;
-            }
-
-            $version = $this->askForVersion($dep);
-
-            $composer['require'][$dep] = $version;
+            $composer['require'][$dep] = $this->getLatestVersion($dep);
         }
 
-        $hasMoreDependencies = true;
-        do {
-            $dep = $this->ask('Enter the next dependency name, or leave blank if done.');
-            if (!$dep) {
-                $hasMoreDependencies = false;
-            } else {
-                $version = $this->askForVersion($dep);
-
-                $composer['require'][$dep] = $version;
-            }
-        } while ($hasMoreDependencies);
-
+        $composer['require-dev'] = [];
         foreach ($this->defaultDevDeps as $dep => $ver) {
-            if (array_key_exists('require', $composer) && array_key_exists($dep, $composer['require'])) {
-                continue;
-            }
-
-            $confirm = $this->confirm(sprintf('Should `%s` be included in require-dev?', $dep));
-            if (!$this->askQuestion($confirm)) {
-                continue;
-            }
-
-            if (!isset($composer['require-dev'])) {
-                $composer['require-dev'] = [];
-            }
-
             $composer['require-dev'][$dep] = $ver;
         }
 
+        $composer['suggest'] = [];
         foreach ($this->defaultSuggests as $dep => $val) {
-            if (array_key_exists('require', $composer) && array_key_exists($dep, $composer['require'])) {
-                continue;
-            }
-
-            $confirm = $this->confirm(sprintf('Should `%s` be suggested?', $dep));
-            if (!$this->askQuestion($confirm)) {
-                continue;
-            }
-
-            if (!isset($composer['suggest'])) {
-                $composer['suggest'] = [];
-            }
-
             $composer['suggest'][$dep] = $val;
         }
 
@@ -244,17 +193,6 @@ class Composer
             $this->path .'/composer.json',
             json_encode($composer, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES) . PHP_EOL
         );
-    }
-
-    private function askForVersion($dep)
-    {
-        if (strpos($dep, 'ext-') !== false) {
-            $defaultVersion = '*';
-        } else {
-            $defaultVersion = $this->getLatestVersion($dep);
-        }
-
-        return $this->ask('Enter the version to require', $defaultVersion);
     }
 
     private function getLatestVersion($dep)

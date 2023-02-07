@@ -14,18 +14,23 @@ that project.
 
 To begin, install the preferred dependency manager for PHP, [Composer](https://getcomposer.org/).
 
-Now to install just this component:
+Now, install this component:
 
 ```sh
 $ composer require google/{name}
 ```
 
-Or to install the entire suite of components at once:
+> Browse the complete list of [Google Cloud APIs](https://cloud.google.com/php/docs/reference)
+> for PHP
 
 ```sh
 $ composer require google/cloud
 ```
-{notice}
+
+This component supports both REST over HTTP/1.1 and gRPC. In order to take advantage of the benefits
+offered by gRPC (such as streaming methods) please see our
+[gRPC installation guide](https://cloud.google.com/php/grpc).
+
 ### Authentication
 
 Please see our [Authentication guide](https://github.com/googleapis/google-cloud-php/blob/main/AUTHENTICATION.md) for more information
@@ -33,8 +38,7 @@ on authenticating your client. Once authenticated, you'll be ready to start maki
 
 ### Sample
 
-```php
-```
+See the [samples directory](samples/) for a canonical list of samples.
 
 ### Version
 

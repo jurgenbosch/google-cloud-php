@@ -32,7 +32,6 @@ class TestConfig
      */
     private $path;
 
-
     public function __construct($rootPath, $path)
     {
         $this->rootPath = $rootPath;
@@ -41,17 +40,9 @@ class TestConfig
 
     public function run()
     {
-        $files = [
-            'phpunit.xml.dist',
-            'phpunit-snippets.xml.dist',
-            'phpunit-system.xml.dist'
-        ];
+        $source = $this->rootPath . '/dev/src/AddComponent/templates/template-phpunit.xml.dist.txt';
+        $dest = $this->path . '/' . $file;
 
-        foreach ($files as $file) {
-            $source = $this->rootPath . '/dev/src/AddComponent/templates/template-' . $file . '.txt';
-            $dest = $this->path . '/' . $file;
-
-            copy($source, $dest);
-        }
+        copy($source, $dest);
     }
 }

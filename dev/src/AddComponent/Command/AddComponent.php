@@ -22,10 +22,8 @@ use Google\Cloud\Dev\AddComponent\Contributing;
 use Google\Cloud\Dev\AddComponent\GitAttributes;
 use Google\Cloud\Dev\AddComponent\Info;
 use Google\Cloud\Dev\AddComponent\License;
-use Google\Cloud\Dev\AddComponent\Manifest;
 use Google\Cloud\Dev\AddComponent\PullRequestTemplate;
-use Google\Cloud\Dev\AddComponent\Readmes;
-use Google\Cloud\Dev\AddComponent\TableOfContents;
+use Google\Cloud\Dev\AddComponent\Readme;
 use Google\Cloud\Dev\AddComponent\TestConfig;
 use Google\Cloud\Dev\Command\GoogleCloudCommand;
 use Google\Cloud\Dev\QuestionTrait;
@@ -93,22 +91,17 @@ class AddComponent extends GoogleCloudCommand
 
         $output->writeln($formatter->formatSection(
             'Test Config',
-            'Creating PHPUnit configs by copying from templates.'
+            'Creating PHPUnit config by copying from template.'
         ));
 
         (new TestConfig($this->rootPath, $info['path']))->run();
 
         $output->writeln($formatter->formatSection(
             'Readme',
-            'README files will be created in the root, and in any "V*" folders. ' .
-            'README files are populated using information you already supplied. ' .
-            'When a directory does not contain a single entry point, or a main client class, ' .
-            'README functions as a main service. ' .
-            PHP_EOL
+            'Creating README.md by copying from template.'
         ));
 
-        $readme = new Readmes(
-            $this->getHelper('question'),
+        $readme = new Readme(
             $input,
             $output,
             $this->rootPath,
@@ -117,48 +110,12 @@ class AddComponent extends GoogleCloudCommand
         $readme->run();
 
         $output->writeln($formatter->formatSection(
-            'Table of Contents',
-            'The main service for a directory is what users will see when they first ' .
-            'encounter an endpoint in the documentation hierarchy. If a main service ' .
-            'is present (as in handwritten clients), that service should be used. ' .
-            'If not, choose README.md' .
-            PHP_EOL
-        ));
-
-        (new TableOfContents(
-            $this->getHelper('formatter'),
-            $this->getHelper('question'),
-            $input,
-            $output,
-            $this->rootPath,
-            $info['path']
-        ))->run($info['name']);
-
-        $output->writeln($formatter->formatSection(
-            'Table of Contents',
-            'Wrote table of contents data.' . PHP_EOL
-        ));
-
-        $output->writeln($formatter->formatSection(
             'Composer',
             'The following questions allow us to properly configure the new component ' .
             'for use with PHP\'s package manager, Composer.'
         ));
 
         (new Composer(
-            $this->getHelper('question'),
-            $input,
-            $output,
-            $this->rootPath,
-            $info
-        ))->run();
-
-        $output->writeln($formatter->formatSection(
-            'Docs Manifest',
-            'Finally, we need to configure the manifest for the documentation site.'
-        ));
-
-        (new Manifest(
             $this->getHelper('question'),
             $input,
             $output,

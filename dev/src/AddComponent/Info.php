@@ -29,7 +29,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Info
 {
-    use ComponentTypeTrait;
     use QuestionTrait;
 
     /**
@@ -84,45 +83,33 @@ class Info
         $default = explode('://', $default);
         $default[1] = str_replace('//', '/', $default[1]);
 
-        $info['docsPage'] = $this->askCloudPage(
-            'Please enter the URI of the documentation homepage',
-             $default[0] . '://' . $default[1],
-            $info
+        $info['docsPage'] = sprintf(
+            'https://cloud.google.com/php/docs/reference/%s/latest',
+            $info['name']
         );
 
         $default = str_replace(' ', '', ucwords(str_replace('-', ' ', $info['shortName'])));
         $base = $this->rootPath;
         $q = $this->question(
-            'Please enter the directory name, relative to the google-cloud-php root, where the component is found. Be sure to verify correct casing.',
+            'Please enter the component name (the directory relative to the google-cloud-php root where the component is found). Be sure to verify correct casing.',
             $default
         )->setValidator(function ($answer) use ($base) {
-            $path = realpath($base . '/' . $answer);
+            $path = $base . '/' . $answer;
 
             if (!is_dir($path)) {
-                throw new \RuntimeException(
-                    $path .' does not exist or is not a folder.'
-                );
+                if (file_exists($path)) {
+                    throw new \RuntimeException($path . ' exists and is not a folder.');
+                }
+                if (!mkdir($path)) {
+                    throw new \RuntimeException('unable to create directory ' . $path);
+                }
             }
 
             return $path;
         });
 
         $info['path'] = $this->askQuestion($q);
-
-        $defaultType = $this->getComponentTypeValue('gapic');
-        $q = $this->choice(
-            'What type of component is this?',
-            $this->getComponentTypesListValues(),
-            $defaultType
-        )->setValidator($this->validators([
-            $this->defaultChoice($defaultType),
-            $this->preventEmpty(),
-            $this->removeDefaultNotice($defaultType),
-            function ($answer) {
-                return $this->getComponentTypeKey($answer);
-            }
-        ]));
-        $info['type'] = $this->askQuestion($q);
+        $info['type'] = 'gapic';
 
         $this->output->writeln('Confirm entered data');
         foreach ($info as $key => $val) {
