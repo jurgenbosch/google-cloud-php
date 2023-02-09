@@ -42,7 +42,7 @@ class AddComponent extends GoogleCloudCommand
 
     protected function configure()
     {
-        $this->setName('component')
+        $this->setName('add-component')
             ->setDescription('Add a Component');
     }
 
@@ -145,5 +145,17 @@ class AddComponent extends GoogleCloudCommand
     protected function output()
     {
         return $this->output;
+    }
+
+    private function writeTemplateFile($templateFile, $path)
+    {
+        $newFile = $path . '/' . str_replace(['template-', '.txt'], '', basename($templateFile));
+        $content = file_get_contents($this->templatesPath .'/'. self::README_TPL);
+
+        foreach ($this->info as $key => $value) {
+            $content = str_replace("{{$key}}", $value, $content);
+        }
+
+        file_put_contents($file, $content);
     }
 }
