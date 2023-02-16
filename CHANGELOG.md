@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.198.0
+
+<details><summary>google/cloud-dialogflow 1.2.0</summary>
+
+
+
+### Features
+
+* [Dialogflow] added support for AssistQueryParameters and SynthesizeSpeechConfig ([#5878](https://github.com/googleapis/google-cloud-php/issues/5878)) ([220d3fd](https://github.com/googleapis/google-cloud-php/commit/220d3fd255f72a1a76d440511e8694d6108ba821))
+* Added support for AssistQueryParameters and SynthesizeSpeechConfig ([220d3fd](https://github.com/googleapis/google-cloud-php/commit/220d3fd255f72a1a76d440511e8694d6108ba821))
+
+
+### Documentation
+
+* Add more meaningful comments ([220d3fd](https://github.com/googleapis/google-cloud-php/commit/220d3fd255f72a1a76d440511e8694d6108ba821))
+
+</details>
+
+<details><summary>google/cloud-security-private-ca 1.1.0</summary>
+
+
+
+### Features
+
+* [SecurityPrivateCa] add X.509 Name Constraints support ([#5874](https://github.com/googleapis/google-cloud-php/issues/5874)) ([fda8c6c](https://github.com/googleapis/google-cloud-php/commit/fda8c6c0061184e889d039eb4bbb2e88e35be9a7))
+
+</details>
+
 ## 0.197.0
 
 <details><summary>google/cloud-access-approval 1.0.3</summary>

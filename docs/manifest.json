@@ -11,6 +11,7 @@
             "name": "google/cloud",
             "defaultService": "servicebuilder",
             "versions": [
+                "v0.198.0",
                 "v0.197.0",
                 "v0.196.0",
                 "v0.195.0",
@@ -1829,6 +1830,7 @@
             "name": "google/cloud-dialogflow",
             "defaultService": "dialogflow/readme",
             "versions": [
+                "v1.2.0",
                 "v1.1.1",
                 "v1.1.0",
                 "v1.0.1",
@@ -3786,6 +3788,7 @@
             "name": "google/cloud-security-private-ca",
             "defaultService": "securityprivateca/readme",
             "versions": [
+                "v1.1.0",
                 "v1.0.3",
                 "v1.0.2",
                 "v1.0.1",
